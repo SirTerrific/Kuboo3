@@ -2,6 +2,15 @@
 <changelog bulletedList="true">
 
     <changelogversion
+        changeDate="Oct 20, 2026"
+        versionName="1.2.41">
+        <changelogtext>update libraries, including security fixes for the epub reader</changelogtext>
+        <changelogtext>require Android 7 or later</changelogtext>
+        <changelogtext>ask for the notification permission on Android 13 and later</changelogtext>
+        <changelogtext>fix lint errors and remove unused legacy files</changelogtext>
+    </changelogversion>
+
+    <changelogversion
         changeDate="Aug 20, 2026"
         versionName="1.2.40">
         <changelogtext>read pages larger than 5MB instead of failing with "Mark has been invalidated"</changelogtext>
