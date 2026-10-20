@@ -23,7 +23,7 @@ class HomeFragment : HomeFragmentImpl1_Content() {
                 latestRecyclerView = view.findViewById(R.id.home_layout_latest_recyclerView)
                 latestMoreTextView = view.findViewById(R.id.home_layout_latest_textView2)
                 latestEmptyTextView = view.findViewById(R.id.home_layout_latest_textView3)
-                latestRecyclerView.layoutManager = LatestLinearLayoutManager(activity!!)
+                latestRecyclerView.layoutManager = LatestLinearLayoutManager(requireActivity())
                 latestRecyclerView.setHasFixedSize(true)
             }
         }

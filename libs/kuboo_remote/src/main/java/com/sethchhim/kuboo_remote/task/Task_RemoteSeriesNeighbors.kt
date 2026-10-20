@@ -13,7 +13,7 @@ import java.net.SocketTimeoutException
 
 class Task_RemoteSeriesNeighbors(kubooRemote: KubooRemote, login: Login, book: Book, stringUrl: String, seriesLimit: Int) {
 
-    internal val liveData = MutableLiveData<List<Book>>()
+    internal val liveData = MutableLiveData<List<Book>?>()
 
     private val okHttpHelper = kubooRemote.okHttpHelper
     private val parseService = okHttpHelper.parseService

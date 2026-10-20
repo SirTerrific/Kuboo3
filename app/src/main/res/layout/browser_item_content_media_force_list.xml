@@ -20,7 +20,7 @@
             android:layout_height="72dp"
             android:scaleType="center"
             android:src="@drawable/ic_folder_circle"
-            android:tint="@color/darkColorPrimary"
+            app:tint="@color/darkColorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
@@ -31,7 +31,7 @@
             android:layout_height="72dp"
             android:scaleType="center"
             android:src="@drawable/ic_folder"
-            android:tint="@color/md_blue_grey_400"
+            app:tint="@color/md_blue_grey_400"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>

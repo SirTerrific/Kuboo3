@@ -14,7 +14,7 @@ open class BrowserBaseFragmentImpl1_Pagination : BrowserBaseFragmentImpl0_View()
 
     protected var isPaginationEnabled = true
     protected lateinit var paginationHandler: PaginationHandler
-    private var paginationLiveData = MutableLiveData<Pagination>()
+    private var paginationLiveData: MutableLiveData<out Pagination?> = MutableLiveData()
 
     protected fun setPagination() = when (isPaginationEnabled) {
         true -> paginationLayout.visible()

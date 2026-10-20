@@ -9,7 +9,7 @@ class Task_LocalImageInputStreamSingleInstance(kubooLocal: KubooLocal, filePath:
 
     private val parser = Task_LocalFileParser(filePath).parser
 
-    internal val liveData = MutableLiveData<InputStream>()
+    internal val liveData = MutableLiveData<InputStream?>()
 
     init {
         kubooLocal.diskIO.execute {

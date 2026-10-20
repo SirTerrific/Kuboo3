@@ -12,7 +12,7 @@ class Task_Ping(val kubooRemote: KubooRemote, val login: Login, val stringUrl: S
 
     private val okHttpHelper = kubooRemote.okHttpHelper
 
-    internal val liveData = MutableLiveData<Response>()
+    internal val liveData = MutableLiveData<Response?>()
 
     init {
         kubooRemote.networkIO.execute {

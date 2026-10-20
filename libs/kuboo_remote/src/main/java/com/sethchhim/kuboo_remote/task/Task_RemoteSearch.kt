@@ -15,7 +15,7 @@ class Task_RemoteSearch(kubooRemote: KubooRemote, val login: Login, val stringQu
     private val parseService = okHttpHelper.parseService
     private val URL_PATH_SEARCH = "?search=true&searchstring="
 
-    internal val liveData = MutableLiveData<List<Book>>()
+    internal val liveData = MutableLiveData<List<Book>?>()
 
     init {
         kubooRemote.networkIO.execute {

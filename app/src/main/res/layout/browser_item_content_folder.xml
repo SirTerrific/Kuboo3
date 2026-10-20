@@ -21,7 +21,7 @@
             android:layout_height="72dp"
             android:scaleType="center"
             android:src="@drawable/ic_folder_circle"
-            android:tint="@color/darkColorPrimary"
+            app:tint="@color/darkColorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -32,7 +32,7 @@
             android:layout_height="0dp"
             android:scaleType="center"
             android:src="@drawable/ic_folder"
-            android:tint="@color/md_blue_grey_400"
+            app:tint="@color/md_blue_grey_400"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -55,7 +55,7 @@
             android:layout_marginBottom="14dp"
             android:scaleType="center"
             android:src="@drawable/ic_collections"
-            android:tint="@color/md_green_500"
+            app:tint="@color/md_green_500"
             app:layout_constraintBottom_toBottomOf="@+id/browser_item_content_folder_imageView2"
             app:layout_constraintEnd_toEndOf="@+id/browser_item_content_folder_imageView2" />
 

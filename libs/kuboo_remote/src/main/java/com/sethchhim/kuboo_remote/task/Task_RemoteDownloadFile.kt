@@ -15,7 +15,7 @@ import java.net.URL
 class Task_RemoteDownloadFile(val kubooRemote: KubooRemote, val login: Login, val stringUrl: String, val saveDir: File) {
 
     private val okHttpHelper = kubooRemote.okHttpHelper
-    internal val liveData = MutableLiveData<File>()
+    internal val liveData = MutableLiveData<File?>()
 
     init {
         kubooRemote.networkIO.execute {

@@ -62,7 +62,11 @@ class SystemUtil(private val context: Context) {
 
     internal fun isDebugBuild() = BuildConfig.APPLICATION_ID.endsWith("debug", ignoreCase = true)
 
-    internal fun collapseNotifications() = context.sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+    // API 31+ rejects this broadcast (SecurityException) and closes the shade itself when an activity starts.
+    @android.annotation.SuppressLint("MissingPermission")
+    internal fun collapseNotifications() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) context.sendBroadcast(Intent(Intent.ACTION_CLOSE_SYSTEM_DIALOGS))
+    }
 
     internal fun isOrientationLandscape() = getOrientation() == Configuration.ORIENTATION_LANDSCAPE
 

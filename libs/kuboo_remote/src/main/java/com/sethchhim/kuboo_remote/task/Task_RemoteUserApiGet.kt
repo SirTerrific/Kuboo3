@@ -11,7 +11,7 @@ import timber.log.Timber
 
 class Task_RemoteUserApiGet(kubooRemote: KubooRemote, login: Login, book: Book) : Task_RemoteUserApiBase(kubooRemote, login, book) {
 
-    internal val liveData = MutableLiveData<Book>()
+    internal val liveData = MutableLiveData<Book?>()
     private val startTime = System.currentTimeMillis()
 
     init {

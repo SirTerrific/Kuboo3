@@ -15,7 +15,7 @@ class Task_RemotePagination(val kubooRemote: KubooRemote, val login: Login, val 
 
     private val okHttpHelper = kubooRemote.okHttpHelper
 
-    internal val liveData = MutableLiveData<Pagination>()
+    internal val liveData = MutableLiveData<Pagination?>()
 
     init {
         kubooRemote.networkIO.execute {

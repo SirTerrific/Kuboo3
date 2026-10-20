@@ -69,6 +69,8 @@ open class ReaderBaseActivity : ReaderBaseActivityImpl7_Hardware() {
         return super.onOptionsItemSelected(item)
     }
 
+    // exitActivity() calls super.onBackPressed() itself once the overlay is hidden.
+    @android.annotation.SuppressLint("MissingSuperCall")
     override fun onBackPressed() = onBackPressedReader()
 
     override fun onUserLeaveHint() {

@@ -1,6 +1,9 @@
 package com.sethchhim.kuboo_client.ui.main
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -37,6 +40,12 @@ open class MainActivity : MainActivityImpl2_Selection(), BottomNavigationView.On
             else -> ContextCompat.getColor(this, R.color.darkWindowBackground)
         }
 
+        // Android 13+ hides the download notifications until this is granted.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), 0)
+        }
+
         if (systemUtil.isFirstRunOfThisVersion()) showChangeLog()
 
         supportFragmentManager.addOnBackStackChangedListener { setTitleByCurrentFragment() }
@@ -68,6 +77,8 @@ open class MainActivity : MainActivityImpl2_Selection(), BottomNavigationView.On
         forceOrientationSetting()
     }
 
+    // Back is fully custom here; calling super would finish the activity.
+    @android.annotation.SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
         when (getCurrentFragment()) {
             is BrowserLatestFragment -> selectHome()

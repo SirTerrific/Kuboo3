@@ -12,7 +12,7 @@ import timber.log.Timber
 
 class Task_RemoteUserApiPut(kubooRemote: KubooRemote, login: Login, book: Book) : Task_RemoteUserApiBase(kubooRemote, login, book) {
 
-    internal val liveData = MutableLiveData<Boolean>()
+    internal val liveData = MutableLiveData<Boolean?>()
 
     init {
         kubooRemote.networkIO.execute {

@@ -270,4 +270,26 @@ Panel doble"</string>
     <string name="title_downloads">"Descargas"</string>
     <string name="title_home">"Home"</string>
     <string name="title_settings">"Configuraciones"</string>
+    <string name="about_subtitle">"Cliente de Ubooquity"</string>
+    <string name="about_answer1">"El servidor Ubooquity DEBE activar el feed OPDS.
+    \n \nEl servidor Ubooquity DEBE abrir el puerto de red correspondiente.
+    \n \nEl servidor Ubooquity DEBE estar permitido en los cortafuegos.
+    \n \nDebe usar uno de los siguientes formatos:
+    \n \nUbooquity 3: \"http://192.168.0.1:2202/opds/\"
+    \nUbooquity 2: \"http://192.168.0.1:2202/opds-comics/\"
+    \nUbooquity 2: \"http://192.168.0.1:2202/opds-books/\""</string>
+    <string name="about_answer2">"Los marcadores son un sistema híbrido que usa bases de datos remota y local. Primero se usa el marcador local y luego se busca un marcador remoto si existe. Si se encuentra uno remoto, tiene prioridad.
+    \n\nUbooquity 3 guarda la marca por sí mismo: el número de página para un cómic, una posición para un libro. No tiene campo para indicar si un título está terminado, así que eso se guarda solo en este dispositivo.
+    \n\nLos archivos epub no admiten marcadores en el servidor."</string>
+    <string name="about_answer4">"Las portadas son la primera página, pedida al servidor al tamaño en que se muestran, por lo que deberían verse nítidas.
+    \n \nUn título para el que el servidor no ofrece páginas usa la miniatura del propio servidor, cuyo tamaño puede cambiar en el software del servidor Ubooquity."</string>
+    <string name="about_develop_message">"Kuboo3 lo mantiene SirTerrific, junto con Claude, el asistente de programación de Anthropic. Cada cambio se prueba con un servidor Ubooquity 3 real antes de publicarse.
+    \n \nKuboo, del que esto es un fork, fue escrito por Seth Chhim para su propio uso y compartido con una pequeña comunidad de lectores. Su desarrollo se detuvo en 2019: informe de cualquier problema de esta versión en la página del fork y no a él.
+    \n \nAgradecimiento especial a Tom por crear Ubooquity."</string>
+    <string name="about_donate">"☕ Invítame a un café"</string>
+    <string name="reader_link_not_found">"Este enlace no lleva a ninguna parte de este libro."</string>
+    <string name="settings_allow_self_signed">"Aceptar certificados autofirmados"</string>
+    <string name="settings_allow_self_signed_summary">"Solo para un servidor https cuyo certificado firmó usted mismo. Mientras esté activado, nada distingue a su servidor de alguien que responda en su lugar."</string>
+    <string name="settings_shared_element_transition">"Transición de elemento compartido"</string>
+    <string name="settings_show_transition_animations">"Mostrar animaciones de transición"</string>
 </resources>

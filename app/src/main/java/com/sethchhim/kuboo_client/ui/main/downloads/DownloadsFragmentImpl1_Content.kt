@@ -21,15 +21,17 @@ open class DownloadsFragmentImpl1_Content : DownloadsFragmentImpl0_View() {
     @Inject lateinit var kubooRemote: KubooRemote
 
     protected fun populateDownloads(enableLoading: Boolean = true) {
+        // Fetch callbacks can arrive after the view is destroyed.
+        val owner = viewLifecycleOwnerLiveData.value ?: return
         if (enableLoading) {
             setNumberProgressBar()
             setStateLoading()
             resetDownloads()
             contentRecyclerView.saveState()
         }
-        viewModel.getDownloadListLiveData().observe(this, Observer { result ->
+        viewModel.getDownloadListLiveData().observe(owner, Observer { result ->
             result?.let {
-                viewModel.getFetchDownloads().observe(this, Observer { fetchDownloads ->
+                viewModel.getFetchDownloads().observe(owner, Observer { fetchDownloads ->
                     fetchDownloads?.let {
                         handleResult(result.downloadListToBookList(), fetchDownloads)
                     }

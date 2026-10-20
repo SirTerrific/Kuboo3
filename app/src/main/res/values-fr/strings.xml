@@ -44,7 +44,6 @@ Kuboo, dont ceci est un fork, a été écrit par Seth Chhim pour son usage perso
 
 
 Un merci spécial à Tom pour avoir créé Ubooquity."</string>
-    <string name="about_developer_name">"SirTerrific"</string>
     <string name="about_donate">"☕ Offre-moi un café"</string>
     <string name="about_faq">"FAQ"</string>
     <string name="about_google_disclaimer">"• Google Play et le logo Google Play sont des marques de commerce de Google Inc."</string>
@@ -317,4 +316,7 @@ HTTP NON TROUVÉ
     <string name="title_downloads">"Téléchargements"</string>
     <string name="title_home">"Accueil"</string>
     <string name="title_settings">"Paramètres"</string>
+    <string name="about_subtitle">"Client Ubooquity"</string>
+    <string name="settings_shared_element_transition">"Transition d'élément partagé"</string>
+    <string name="settings_show_transition_animations">"Afficher les animations de transition"</string>
 </resources>

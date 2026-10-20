@@ -387,10 +387,10 @@ open class EpubReaderViewImpl1_Content @JvmOverloads constructor(context: Contex
     }
 
     private fun processChaptersByTOC(tocReferences: List<TOCReference>) {
-        tocReferences.forEach {
+        for (ref in tocReferences) {
             val builder = StringBuilder()
             try {
-                val reader = BufferedReader(InputStreamReader(it.resource.inputStream))
+                val reader = BufferedReader(InputStreamReader(ref.resource.inputStream))
                 while (true) {
                     val line = reader.readLine() ?: break
                     builder.append(line)
@@ -398,9 +398,9 @@ open class EpubReaderViewImpl1_Content @JvmOverloads constructor(context: Contex
             } catch (e: Exception) {
             }
 
-            chapterList.add(Chapter(it.title, builder.toString(), it.completeHref))
-            if (it.children.size > 0) {
-                processChaptersByTOC(it.children)
+            chapterList.add(Chapter(ref.title, builder.toString(), ref.completeHref))
+            if (ref.children.size > 0) {
+                processChaptersByTOC(ref.children)
             }
         }
     }

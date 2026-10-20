@@ -24,10 +24,10 @@ android {
     }
     defaultConfig {
         applicationId "io.github.sirterrific.kuboo3"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 35
-        versionCode 75
-        versionName "1.2.40"
+        versionCode 76
+        versionName "1.2.41"
         buildConfigField 'long', 'TIMESTAMP', System.currentTimeMillis() + 'L'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -101,9 +101,9 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     //google
-    kapt "androidx.room:room-compiler:2.8.4"
-    implementation "androidx.work:work-runtime:2.11.2"
-    implementation "androidx.annotation:annotation:1.9.1"
+    kapt "androidx.room:room-compiler:2.8.5"
+    implementation "androidx.work:work-runtime:2.12.0"
+    implementation "androidx.annotation:annotation:1.11.0"
     implementation "androidx.appcompat:appcompat:1.8.0"
     implementation "androidx.cardview:cardview:1.0.0"
     implementation 'androidx.constraintlayout:constraintlayout:2.2.2'
@@ -113,9 +113,9 @@ dependencies {
     implementation "androidx.preference:preference:1.2.1"
     implementation "androidx.recyclerview:recyclerview:1.4.0"
     // used directly by the browser screens; it used to arrive through one of the vendored aars
-    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
-    implementation "androidx.room:room-runtime:2.8.4"
-    implementation "com.google.android.material:material:1.12.0"
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.2.0"
+    implementation "androidx.room:room-runtime:2.8.5"
+    implementation "com.google.android.material:material:1.14.0"
 
     //kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
@@ -169,7 +169,7 @@ dependencies {
     implementation files('libs/recyclerview-animators-eaea82d.aar')
     implementation files('libs/SparkButton-1.0.5.aar')
     implementation files('libs/Android-SpinKit-1.1.0.aar')
-    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'com.google.code.gson:gson:2.14.0'
     implementation 'com.jakewharton.timber:timber:5.0.1'
     implementation 'me.relex:circleindicator:1.2.2@aar'
 

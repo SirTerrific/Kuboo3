@@ -24,7 +24,7 @@
     <string name="about_develop_message">Kuboo3 is maintained by SirTerrific, working with Claude, Anthropic\'s coding assistant. Every change is tested against a real Ubooquity 3 server before it ships.
     \n \nKuboo, which this is a fork of, was written by Seth Chhim for his own use and shared with a niche reading community. Its development stopped in 2019 — please report anything wrong with this build on the fork\'s own page rather than to him.
     \n \nSpecial thanks to Tom for creating Ubooquity.</string>
-    <string name="about_developer_name">SirTerrific</string>
+    <string name="about_developer_name" translatable="false">SirTerrific</string>
     <string name="about_faq">FAQ</string>
     <string name="about_subtitle">Ubooquity Client</string>
     <string name="about_donate">☕ Buy me a coffee</string>

@@ -22,7 +22,7 @@ This app <b>REQUIRES</b> the Ubooquity server software to function properly.
 
 The Ubooquity server <b>MUST</b> enable OPDS feed.
 
-Requires Android 6.0 or later.
+Requires Android 7.0 or later.
 
 When adding a server address you must follow one of these formats:
 * Ubooquity 3: "http://<span>192.168.0.1:2202/opds/</span>"

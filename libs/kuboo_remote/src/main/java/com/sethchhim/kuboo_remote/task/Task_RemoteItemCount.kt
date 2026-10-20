@@ -14,7 +14,7 @@ class Task_RemoteItemCount(kubooRemote: KubooRemote, login: Login, stringUrl: St
     private val okHttpHelper = kubooRemote.okHttpHelper
     private val parseService = okHttpHelper.parseService
 
-    internal val liveData = MutableLiveData<String>()
+    internal val liveData = MutableLiveData<String?>()
 
     init {
         kubooRemote.networkIO.execute {

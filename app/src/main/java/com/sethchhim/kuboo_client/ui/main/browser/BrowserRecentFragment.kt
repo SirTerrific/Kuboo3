@@ -29,7 +29,7 @@ class BrowserRecentFragment : BrowserBaseFragment() {
         setStateLoading()
         resetRecyclerView()
         paginationHandler.reset()
-        viewModel.getRecentListFromDao().observe(this, Observer {
+        viewModel.getRecentListFromDao().observe(viewLifecycleOwner, Observer {
             val book = Book().apply { linkSubsection = Constants.URL_PATH_GRID_DIRECTORY }
             handleMediaResult(book, it)
         })

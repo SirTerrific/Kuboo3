@@ -23,7 +23,7 @@ open class BrowserBaseFragmentImpl2_Content : BrowserBaseFragmentImpl1_Paginatio
     protected lateinit var pathAdapter: BrowserPathAdapter
     protected var isDownloadContent = false
 
-    private var contentLiveData = MutableLiveData<List<Book>>()
+    private var contentLiveData: MutableLiveData<out List<Book>?> = MutableLiveData()
 
     internal fun populateContent(book: Book, loadState: Boolean = true, addPath: Boolean = true) {
         setStateLoading()

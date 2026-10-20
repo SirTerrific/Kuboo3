@@ -14,7 +14,7 @@ class Task_RemoteFirstBook(val kubooRemote: KubooRemote, val login: Login, val b
     private val okHttpHelper = kubooRemote.okHttpHelper
     private val parseService = okHttpHelper.parseService
 
-    internal val liveData = MutableLiveData<Book>()
+    internal val liveData = MutableLiveData<Book?>()
 
     init {
         kubooRemote.networkIO.execute {
