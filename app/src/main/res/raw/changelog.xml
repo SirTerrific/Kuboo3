@@ -2,6 +2,16 @@
 <changelog bulletedList="true">
 
     <changelogversion
+        changeDate="Oct 27, 2026"
+        versionName="1.2.42">
+        <changelogtext>keep a download from leaving a broken file when it is interrupted</changelogtext>
+        <changelogtext>sign in again when the server forgets the session</changelogtext>
+        <changelogtext>keep cookies separate for each server</changelogtext>
+        <changelogtext>stop an epub from writing files outside the cache folder</changelogtext>
+        <changelogtext>keep the saved servers when the encryption key cannot be read</changelogtext>
+    </changelogversion>
+
+    <changelogversion
         changeDate="Oct 20, 2026"
         versionName="1.2.41">
         <changelogtext>update libraries, including security fixes for the epub reader</changelogtext>
