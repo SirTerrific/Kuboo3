@@ -351,7 +351,7 @@ open class EpubReaderViewImpl1_Content @JvmOverloads constructor(context: Contex
             while (itr.hasNext()) {
                 val rs = itr.next()
                 if (rs.mediaType === MediatypeService.JPG || rs.mediaType === MediatypeService.PNG || rs.mediaType === MediatypeService.GIF || rs.mediaType === MediatypeService.CSS) {
-                    val oppath1 = File(directory + File.separator + rs.href)
+                    val oppath1 = resolveInside(File(directory), rs.href) ?: continue
                     //Log.d("EpubReaderRD", rs.getHref()+"\t"+oppath1.getAbsolutePath()+"\t"+rs.getSize());
                     val dir = File(oppath1.absolutePath.substring(0, oppath1.absolutePath.lastIndexOf("/")))
                     if (!dir.exists())
@@ -635,4 +635,14 @@ open class EpubReaderViewImpl1_Content @JvmOverloads constructor(context: Contex
         if (chapterProgress < 0f || chapterProgress > 1f) this.progress = 0f
     }
 
+}
+/**
+ * Where a resource of the epub goes under [root], or null when its href climbs out of it.
+ *
+ * The href comes from the epub, so "../../shared_prefs/x" would otherwise write over the app's
+ * own files.
+ */
+internal fun resolveInside(root: File, href: String): File? {
+    val file = File(root, href)
+    return if (file.canonicalPath.startsWith(root.canonicalPath + File.separator)) file else null
 }

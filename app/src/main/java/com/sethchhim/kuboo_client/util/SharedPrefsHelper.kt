@@ -150,11 +150,16 @@ class SharedPrefsHelper(val context: Context) {
     fun getServerList(): MutableList<Login> {
         val stored = sharedPreferences.getString(KEY_LOGIN_LIST, null) ?: return mutableListOf()
         val json = CredentialCipher.decrypt(stored)
-        return when (json.isEmpty()) {
+        isServerListUnreadable = json == null
+        return when (json.isNullOrEmpty()) {
             true -> mutableListOf()
             false -> json.fromJson() ?: mutableListOf()
         }
     }
+
+    // Set when the keystore failed for now: the list shown is empty only because it could not be
+    // read, so saving it would wipe the real one.
+    @Volatile private var isServerListUnreadable = false
 
     fun getLoginLastAccessed(): Login? {
         val serverList = getServerList()
@@ -279,6 +284,10 @@ class SharedPrefsHelper(val context: Context) {
 
     fun saveServerList(serverList: MutableList<Login>) {
         if (isDebugSharedPreferencesHelper) Timber.i("Saving SERVER_LIST: size[${serverList.size}]")
+        if (isServerListUnreadable) {
+            Timber.e("Server list could not be read, not overwriting it")
+            return
+        }
         // the list carries the Basic auth password, so it is encrypted at rest
         val encrypted = CredentialCipher.encrypt(serverList.toJson())
         sharedPreferences.edit().putString(KEY_LOGIN_LIST, encrypted).apply()

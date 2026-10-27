@@ -18,6 +18,7 @@ import java.security.KeyManagementException
 import java.security.NoSuchAlgorithmException
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.net.ssl.HostnameVerifier
 import javax.net.ssl.HttpsURLConnection
@@ -84,7 +85,7 @@ class OkHttpClientFactory(private val context: Context) {
     }
 
     private fun cache(): Cache {
-        val cacheFile = File("${context.cacheDir}okhttp_cache")
+        val cacheFile = File(context.cacheDir, "okhttp_cache")
         if (!cacheFile.exists()) cacheFile.mkdir()
         return Cache(cacheFile, (CACHE_SIZE * 1024 * 1024).toLong())
     }
@@ -99,23 +100,7 @@ class OkHttpClientFactory(private val context: Context) {
         null
     }
 
-    /**
-     * Cookies are kept per host, which is what a server session needs.
-     *
-     * Keying them by the full url instead meant a session was only ever sent back to the exact
-     * address that set it: Ubooquity hands out its session when the opds feed is fetched, and
-     * that session is what /pagereader/ checks -- it ignores the basic authentication header
-     * entirely and answers an "Authentication error" image without one.
-     */
-    private val cookieJar = object : CookieJar {
-        private val cookieStore = HashMap<String, List<Cookie>>()
-
-        override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-            cookieStore[url.host] = cookies
-        }
-
-        override fun loadForRequest(url: HttpUrl): List<Cookie> = cookieStore[url.host] ?: mutableListOf()
-    }
+    private val cookieJar = HostCookieJar()
 
     private val trustAllManager = object : X509TrustManager {
         @Throws(CertificateException::class)
@@ -129,4 +114,34 @@ class OkHttpClientFactory(private val context: Context) {
         override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
     }
 
+}
+
+/**
+ * Cookies are kept per host and port, which is what a server session needs.
+ *
+ * Keying them by the full url instead meant a session was only ever sent back to the exact
+ * address that set it: Ubooquity hands out its session when the opds feed is fetched, and
+ * that session is what /pagereader/ checks -- it ignores the basic authentication header
+ * entirely and answers an "Authentication error" image without one.
+ *
+ * okhttp calls this from several threads at once, and a response that sets one cookie must not
+ * wipe the others the host already set, so the store is concurrent and merges by cookie name.
+ */
+internal class HostCookieJar : CookieJar {
+    private val store = ConcurrentHashMap<String, List<Cookie>>()
+
+    override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+        store.merge(key(url), cookies) { old, new -> old.filter { o -> new.none { it.name == o.name } } + new }
+    }
+
+    override fun loadForRequest(url: HttpUrl): List<Cookie> {
+        val now = System.currentTimeMillis()
+        return store[key(url)]?.filter { it.expiresAt > now } ?: emptyList()
+    }
+
+    fun forget(url: HttpUrl, name: String) {
+        store.computeIfPresent(key(url)) { _, cookies -> cookies.filter { it.name != name } }
+    }
+
+    private fun key(url: HttpUrl) = "${url.host}:${url.port}"
 }

@@ -2,7 +2,6 @@ package com.sethchhim.kuboo_remote.client
 
 import android.util.Base64
 import okhttp3.Call
-import okhttp3.CookieJar
 import okhttp3.FormBody
 import okhttp3.HttpUrl
 import okhttp3.Interceptor
@@ -32,20 +31,41 @@ import javax.crypto.spec.SecretKeySpec
  * Credentials come from the request's own basic authentication header, so this needs no wiring at
  * the call sites: every request already carries them, Glide's included.
  */
-internal class UbooquitySessionInterceptor(private val cookieJar: CookieJar,
+internal class UbooquitySessionInterceptor(private val cookieJar: HostCookieJar,
                                            private val callFactory: () -> Call.Factory) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
-        if (request.isPageReader()) synchronized(this) {
-            if (!hasSession(request.url)) login(request)
+        if (!request.isPageReader()) return chain.proceed(request)
+
+        synchronized(this) { if (!hasSession(request.url)) login(request) }
+        val usedSession = session(request.url) ?: return chain.proceed(request)
+
+        val response = chain.proceed(request)
+        if (!response.isAuthenticationError()) return response
+
+        // The server forgot the session (restart, timeout): it answers the error image, with a 200,
+        // to a cookie it no longer knows. Sign in again once, unless another page already did.
+        response.close()
+        synchronized(this) {
+            if (session(request.url) == usedSession) {
+                cookieJar.forget(request.url, COOKIE_SESSION)
+                login(request)
+            }
         }
         return chain.proceed(request)
     }
 
     private fun Request.isPageReader() = url.encodedPath.startsWith(PATH_PAGE_READER)
 
-    private fun hasSession(url: HttpUrl) = cookieJar.loadForRequest(url).any { it.name == COOKIE_SESSION }
+    private fun session(url: HttpUrl) = cookieJar.loadForRequest(url).firstOrNull { it.name == COOKIE_SESSION }?.value
+
+    private fun hasSession(url: HttpUrl) = session(url) != null
+
+    // shortcut: the error image is recognised by its size, as Ubooquity 3.1.0 serves it; a server
+    // version with a different image needs its size here, until then it just is not renewed.
+    private fun Response.isAuthenticationError() =
+            header("Content-Type") == "image/png" && peekBody(AUTH_ERROR_IMAGE_BYTES + 1).contentLength() == AUTH_ERROR_IMAGE_BYTES
 
     private fun login(request: Request) {
         val credentials = request.credentials() ?: return
@@ -93,6 +113,7 @@ internal class UbooquitySessionInterceptor(private val cookieJar: CookieJar,
     private companion object {
         const val PATH_PAGE_READER = "/pagereader/"
         const val COOKIE_SESSION = "UbooquitySession"
+        const val AUTH_ERROR_IMAGE_BYTES = 11928L
         const val BASIC = "Basic "
 
         val SALT = """id="serversalt" value="([^"]*)"""".toRegex()

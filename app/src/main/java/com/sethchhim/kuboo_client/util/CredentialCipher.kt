@@ -1,10 +1,13 @@
 package com.sethchhim.kuboo_client.util
 
 import android.security.keystore.KeyGenParameterSpec
+import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.util.Base64
 import timber.log.Timber
 import java.security.KeyStore
+import java.security.UnrecoverableKeyException
+import javax.crypto.AEADBadTagException
 import javax.crypto.Cipher
 import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
@@ -40,7 +43,16 @@ object CredentialCipher {
         plainText
     }
 
-    fun decrypt(storedValue: String): String {
+    /**
+     * Returns the plain text, "" when the stored value can never be read again, or null when
+     * the keystore failed for now and a later try may work. The caller must not overwrite the
+     * stored value after a null.
+     *
+     * "Never again" is the key being gone (restored on another device, cleared by a lock-screen
+     * reset): the tag check fails, or the key is invalidated. Starting empty is then better than
+     * handing back ciphertext that would be parsed as a server address.
+     */
+    fun decrypt(storedValue: String): String? {
         if (!storedValue.startsWith(PREFIX)) return storedValue
         return try {
             val bytes = Base64.decode(storedValue.removePrefix(PREFIX), Base64.NO_WRAP)
@@ -49,13 +61,20 @@ object CredentialCipher {
             }
             String(cipher.doFinal(bytes, IV_LENGTH, bytes.size - IV_LENGTH), Charsets.UTF_8)
         } catch (e: Exception) {
-            // Happens when the key is gone: restored on another device, or cleared by a
-            // lock-screen reset. The stored servers cannot be recovered, so start empty
-            // rather than hand back ciphertext that would be parsed as a server address.
-            Timber.e("Failed to decrypt credentials, discarding stored servers: ${e.message}")
-            ""
+            if (e.isKeyLost()) {
+                Timber.e("Stored servers cannot be decrypted, discarding them: ${e.message}")
+                ""
+            } else {
+                Timber.e("Keystore failed, keeping stored servers for a later try: ${e.message}")
+                null
+            }
         }
     }
+
+    private fun Exception.isKeyLost() = this is AEADBadTagException
+            || this is KeyPermanentlyInvalidatedException
+            || this is UnrecoverableKeyException
+            || this is IllegalArgumentException // not valid base64 or too short: corrupt value
 
     private fun key(): SecretKey {
         val keyStore = KeyStore.getInstance("AndroidKeyStore").apply { load(null) }

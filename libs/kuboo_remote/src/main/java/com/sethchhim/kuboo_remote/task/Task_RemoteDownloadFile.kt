@@ -21,21 +21,18 @@ class Task_RemoteDownloadFile(val kubooRemote: KubooRemote, val login: Login, va
         kubooRemote.networkIO.execute {
             try {
                 val startTime = System.currentTimeMillis()
-                val call = okHttpHelper.getCall(login, stringUrl, javaClass.simpleName)
-                val response = call.execute()
-                val responseBody = response.body
-                if (responseBody != null) {
-                    val contentLength = responseBody.contentLength()
-                    val fileName = URL(stringUrl).guessFileName()
-                    val saveFilePath = "$saveDir${File.separator}$fileName"
-                    val file = File(saveFilePath)
-                    when (file.exists()) {
-                        true -> onFileExists(file, saveFilePath, responseBody, contentLength, startTime)
-                        false -> onFileDoesNotExist(file, saveFilePath, responseBody, contentLength, startTime)
+                // use{} closes the response on every path: an abandoned one keeps the connection
+                // open and the server logs a broken pipe once it gives up on the transfer.
+                okHttpHelper.getCall(login, stringUrl, javaClass.simpleName).execute().use { response ->
+                    if (!response.isSuccessful) throw NetworkErrorException()
+                    val responseBody = response.body ?: throw NetworkErrorException()
+                    val file = File(saveDir, URL(stringUrl).guessFileName())
+                    val result = when (file.exists() && file.length() == responseBody.contentLength()) {
+                        true -> file
+                        false -> responseBody.saveTo(file)
                     }
-                    response.close()
-                } else {
-                    throw NetworkErrorException()
+                    if (isDebugOkHttp) Timber.i("File download finished. result[$result] [${System.currentTimeMillis() - startTime}] [$stringUrl]")
+                    kubooRemote.mainThread.execute { liveData.value = result }
                 }
             } catch (e: Exception) {
                 if (isDebugOkHttp) Timber.e(e)
@@ -47,43 +44,31 @@ class Task_RemoteDownloadFile(val kubooRemote: KubooRemote, val login: Login, va
         }
     }
 
-    private fun onFileExists(file: File, saveFilePath: String, responseBody: ResponseBody, contentLength: Long, startTime: Long) {
-        if (file.length() == contentLength) {
-            val stopTime = System.currentTimeMillis()
-            val elapsedTime = stopTime - startTime
-            if (isDebugOkHttp) Timber.i("File already exists. Download cancelled. [$saveFilePath] [$elapsedTime] [$stringUrl] ")
-            kubooRemote.mainThread.execute { liveData.value = file }
-        } else {
-            if (isDebugOkHttp) Timber.i("File already exists but is incomplete. Deleting partial download and starting over. fileLength[${file.length()}] totalSize[$contentLength] [$saveFilePath] [$stringUrl] ")
-            file.delete()
-            file.createNewFile()
-            onFileDoesNotExist(file, saveFilePath, responseBody, contentLength, startTime)
-        }
-    }
-
-    /**
-     * The body is copied straight to disk. Reading it into a ByteArray first held the whole
-     * comic in memory and then a second copy while writing it, which runs a device out of
-     * heap on a large file: the OutOfMemoryError below swallowed it, the app reported that
-     * assets could not be loaded, and the abandoned response left the server logging
-     * "EofException: Broken pipe" mid-transfer.
-     */
-    private fun onFileDoesNotExist(file: File, saveFilePath: String, responseBody: ResponseBody, contentLength: Long, startTime: Long) {
-        responseBody.byteStream().use { input -> file.outputStream().use { output -> input.copyTo(output) } }
-        kubooRemote.mainThread.execute { liveData.value = file.verifyLength(contentLength) }
-        val stopTime = System.currentTimeMillis()
-        val elapsedTime = stopTime - startTime
-        if (isDebugOkHttp) Timber.i("File download complete! [$saveFilePath] [$elapsedTime] [$stringUrl]")
-    }
-
     private fun URL.guessFileName(): String {
         val fileExtension = MimeTypeMap.getFileExtensionFromUrl(this.toString())
         return URLUtil.guessFileName(this.toString(), null, fileExtension)
     }
 
-    private fun File.verifyLength(contentLength: Long) = when (length() == contentLength) {
-        true -> this
-        false -> null
-    }
+}
 
+/**
+ * Copies the body straight to disk, to a temporary file next to [file], and moves it into place
+ * only once all of it arrived. A transfer cut short leaves nothing under the real name, so it is
+ * never mistaken for a finished download, and two downloads of one file no longer write into the
+ * same file. Reading the body into a ByteArray first held the whole comic in memory twice, which
+ * runs a device out of heap on a large file.
+ *
+ * Returns null when the length received is not the length announced.
+ */
+internal fun ResponseBody.saveTo(file: File): File? {
+    val expected = contentLength()
+    val part = File.createTempFile("kuboo_", ".part", file.parentFile)
+    try {
+        byteStream().use { input -> part.outputStream().use { output -> input.copyTo(output) } }
+        if (part.length() != expected) return null
+        file.delete()
+        return if (part.renameTo(file)) file else null
+    } finally {
+        part.delete()
+    }
 }
